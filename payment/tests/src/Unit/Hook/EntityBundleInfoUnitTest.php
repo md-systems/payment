@@ -79,7 +79,7 @@ class EntityBundleInfoUnitTest extends UnitTestCase {
 
     $entity_types = array(
       'payment' => $payment_type_definitions,
-      'payment_method' => $payment_method_configuration_definitions,
+      'payment_method_configuration' => $payment_method_configuration_definitions,
     );
     $entity_types_bundles_info = $this->service->invoke();
     $this->assertSame(count($entity_types), count($entity_types_bundles_info));

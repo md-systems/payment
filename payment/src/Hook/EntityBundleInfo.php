@@ -53,7 +53,7 @@ class EntityBundleInfo {
       );
     }
     foreach ($this->paymentMethodConfigurationManager->getDefinitions() as $plugin_id => $definition) {
-      $bundles['payment_method'][$plugin_id] = array(
+      $bundles['payment_method_configuration'][$plugin_id] = array(
         'label' => $definition['label'],
       );
     }
