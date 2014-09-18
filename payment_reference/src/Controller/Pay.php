@@ -8,6 +8,7 @@
 namespace Drupal\payment_reference\Controller;
 
 use Drupal\Core\Access\AccessInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
@@ -67,7 +68,7 @@ class Pay extends ControllerBase implements ContainerInjectionInterface, AccessI
    * @return string
    */
   public function access(Request $request, $storage_key) {
-    return $this->keyValueFactory->get('payment.payment_type.payment_reference')->has($storage_key) ? static::ALLOW : static::DENY;
+    return AccessResult::allowedIf($this->keyValueFactory->get('payment.payment_type.payment_reference')->has($storage_key));
   }
 
 }

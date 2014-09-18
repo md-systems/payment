@@ -7,7 +7,6 @@
 
 namespace Drupal\payment\Event;
 
-use Drupal\Core\Access\AccessInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -16,7 +15,7 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @see \Drupal\payment\Event\PaymentEvents::PAYMENT_QUEUE_PAYMENT_IDS_ALTER
  */
-class PaymentQueuePaymentIdsAlter extends Event implements AccessInterface {
+class PaymentQueuePaymentIdsAlter extends Event {
 
   /**
    * The queue category ID.

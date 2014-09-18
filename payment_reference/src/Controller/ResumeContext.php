@@ -8,6 +8,7 @@
 namespace Drupal\payment_reference\Controller;
 
 use Drupal\Core\Access\AccessInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -84,7 +85,7 @@ class ResumeContext extends ControllerBase implements ContainerInjectionInterfac
    * @return string
    */
   public function access(Request $request, PaymentInterface $payment) {
-    return $payment->getPaymentType()->resumeContextAccess($this->currentUser) ? static::ALLOW : static::DENY;
+    return AccessResult::allowedIf($payment->getPaymentType()->resumeContextAccess($this->currentUser));
   }
 
 }

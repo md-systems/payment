@@ -75,4 +75,7 @@ function payment_reference_entity_field_access($operation, FieldDefinitionInterf
   if ($field_definition->getType() == 'payment_reference') {
     return AccessResult::allowedIf($account->isAuthenticated())->cachePerRole();
   }
+
+  // No opinion.
+  return AccessResult::create();
 }

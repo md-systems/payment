@@ -7,7 +7,6 @@
 
 namespace Drupal\payment\Event;
 
-use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\payment\Entity\PaymentInterface;
 use Drupal\payment\Plugin\Payment\Method\PaymentMethodInterface;
@@ -19,7 +18,7 @@ use Symfony\Component\EventDispatcher\Event;
  *
  * @see \Drupal\payment\Event\PaymentEvents::PAYMENT_EXECUTE_ACCESS
  */
-class PaymentExecuteAccess extends Event implements AccessInterface {
+class PaymentExecuteAccess extends Event {
 
   /**
    * The access check results.
