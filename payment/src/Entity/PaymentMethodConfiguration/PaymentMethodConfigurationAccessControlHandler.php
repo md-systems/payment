@@ -7,6 +7,7 @@
 
 namespace Drupal\payment\Entity\PaymentMethodConfiguration;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -22,17 +23,21 @@ class PaymentMethodConfigurationAccessControlHandler extends EntityAccessControl
   protected function checkAccess(EntityInterface $payment_method, $operation, $langcode, AccountInterface $account) {
     /** @var \Drupal\payment\Entity\PaymentMethodConfigurationInterface $payment_method */
     if ($operation == 'enable') {
-      return !$payment_method->status() && $payment_method->access('update', $account);
+      return AccessResult::forbiddenIf($payment_method->status())->andIf($payment_method->access('update', $account))->cacheUntilEntityChanges($payment_method);
     }
     elseif ($operation == 'disable') {
-      return $payment_method->status() && $payment_method->access('update', $account);
+      return AccessResult::allowedIf($payment_method->status())->andIf($payment_method->access('update', $account))->cacheUntilEntityChanges($payment_method);
     }
     elseif ($operation == 'duplicate') {
-      return $this->createAccess($payment_method->bundle(), $account) && $payment_method->access('view', $account);
+      return $this->createAccess($payment_method->bundle(), $account, array(), TRUE)->andIf($payment_method->access('view', $account));
     }
     else {
       $permission = 'payment.payment_method_configuration.' . $operation;
-      return $account->hasPermission($permission . '.any') || $account->hasPermission($permission . '.own') && $payment_method->getOwnerId() == $account->id();
+      return AccessResult::allowedIfHasPermission($account, $permission . '.any')
+        ->orIf(
+          AccessResult::allowedIfHasPermission($account, $permission . '.own')
+            ->andIf(AccessResult::allowedIf($account->id() == $payment_method->getOwnerId())->cacheUntilEntityChanges($payment_method))
+        );
     }
   }
 
@@ -40,7 +45,7 @@ class PaymentMethodConfigurationAccessControlHandler extends EntityAccessControl
    * {@inheritdoc}
    */
   protected function checkCreateAccess(AccountInterface $account, array $context, $bundle = NULL) {
-    return $account->hasPermission('payment.payment_method_configuration.create.' . $bundle);
+    return AccessResult::allowedIfHasPermission($account, 'payment.payment_method_configuration.create.' . $bundle);
   }
 
   /**

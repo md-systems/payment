@@ -7,7 +7,7 @@
 
 namespace Drupal\payment\Controller;
 
-use Drupal\Core\Access\AccessInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityFormBuilderInterface;
 use Drupal\Core\Entity\EntityManagerInterface;
@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Returns responses for payment method routes.
  */
-class PaymentMethod extends ControllerBase implements AccessInterface {
+class PaymentMethod extends ControllerBase {
 
   /**
    * The payment method configuration plugin manager.
@@ -189,10 +189,10 @@ class PaymentMethod extends ControllerBase implements AccessInterface {
     $access_controller = $this->entityManager->getAccessControlHandler('payment_method_configuration');
     foreach (array_keys($definitions) as $plugin_id) {
       if ($access_controller->createAccess($plugin_id, $this->currentUser)) {
-        return static::ALLOW;
+        return AccessResult::allowed();
       }
     }
-    return static::DENY;
+    return AccessResult::forbidden();
   }
 
   /**
@@ -237,7 +237,7 @@ class PaymentMethod extends ControllerBase implements AccessInterface {
   public function addAccess(Request $request) {
     $plugin_id = $request->attributes->get('plugin_id');
 
-    return $this->entityManager->getAccessControlHandler('payment_method_configuration')->createAccess($plugin_id, $this->currentUser) ? self::ALLOW : self::DENY;
+    return $this->entityManager->getAccessControlHandler('payment_method_configuration')->createAccess($plugin_id, $this->currentUser, TRUE);
   }
 
   /**

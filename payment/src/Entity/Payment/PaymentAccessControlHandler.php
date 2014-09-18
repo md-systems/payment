@@ -7,6 +7,7 @@
 
 namespace Drupal\payment\Entity\Payment;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityAccessControlHandler;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -29,14 +30,14 @@ class PaymentAccessControlHandler extends EntityAccessControlHandler {
     if ($operation == 'update_status') {
       $payment_method = $payment->getPaymentMethod();
       if ($payment_method instanceof PaymentMethodUpdatePaymentStatusInterface && !$payment_method->updatePaymentStatusAccess($account)) {
-        return FALSE;
+        return AccessResult::forbidden();
       }
     }
     elseif ($operation == 'capture') {
       $payment_method = $payment->getPaymentMethod();
-      return $payment_method instanceof PaymentMethodCapturePaymentInterface
-      && $payment_method->capturePaymentAccess($account)
-      && $this->checkAccessPermission($payment, $operation, $account);
+      return AccessResult::allowedIf($payment_method instanceof PaymentMethodCapturePaymentInterface)
+        ->andIf(AccessResult::allowedIf($payment_method->capturePaymentAccess($account)))
+        ->andIf($this->checkAccessPermission($payment, $operation, $account));
     }
     elseif ($operation == 'refund') {
       $payment_method = $payment->getPaymentMethod();
@@ -54,10 +55,15 @@ class PaymentAccessControlHandler extends EntityAccessControlHandler {
    * @param string $operation
    * @param \Drupal\Core\Session\AccountInterface
    *
-   * @return bool
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
   protected function checkAccessPermission(PaymentInterface $payment, $operation, AccountInterface $account) {
-    return $account->hasPermission('payment.payment.' . $operation . '.any') || $account->hasPermission('payment.payment.' . $operation . '.own') && $account->id() == $payment->getOwnerId();
+    return AccessResult::allowedIfHasPermission($account, 'payment.payment.' . $operation . '.any')
+      ->orIf(
+        AccessResult::allowedIfHasPermission($account, 'payment.payment.' . $operation . '.own')
+          ->andIf(AccessResult::allowedIf($account->id() == $payment->getOwnerId())->cacheUntilEntityChanges($payment))
+      );
   }
 
   /**
@@ -66,7 +72,7 @@ class PaymentAccessControlHandler extends EntityAccessControlHandler {
   protected function checkCreateAccess(AccountInterface $account, array $context, $entity_bundle = NULL) {
     // We let other modules decide whether users have access to create
     // new payments. There is no corresponding permission for this operation.
-    return TRUE;
+    return AccessResult::allowed();
   }
 
   /**
