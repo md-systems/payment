@@ -188,11 +188,9 @@ class PaymentMethod extends ControllerBase {
     unset($definitions['payment_unavailable']);
     $access_controller = $this->entityManager->getAccessControlHandler('payment_method_configuration');
     foreach (array_keys($definitions) as $plugin_id) {
-      if ($access_controller->createAccess($plugin_id, $this->currentUser)) {
-        return AccessResult::allowed();
-      }
+      return $access_controller->createAccess($plugin_id, $this->currentUser, array(), TRUE);
     }
-    return AccessResult::forbidden();
+    return AccessResult::create();
   }
 
   /**
