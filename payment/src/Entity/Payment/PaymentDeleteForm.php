@@ -67,7 +67,7 @@ class PaymentDeleteForm extends ContentEntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->getEntity()->delete();
     drupal_set_message($this->t('Payment #!payment_id has been deleted.', array(
       '!id' => $this->getEntity()->id(),

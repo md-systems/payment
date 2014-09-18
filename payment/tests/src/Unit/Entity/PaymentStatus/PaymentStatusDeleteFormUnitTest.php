@@ -114,9 +114,9 @@ class PaymentStatusDeleteFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  function testSubmit() {
+  function testSubmitForm() {
     $this->payment->expects($this->once())
       ->method('delete');
 
@@ -126,7 +126,7 @@ class PaymentStatusDeleteFormUnitTest extends UnitTestCase {
       ->method('setRedirect')
       ->with('payment.payment_status.list');
 
-    $this->form->submit($form, $form_state);
+    $this->form->submitForm($form, $form_state);
   }
 
 }

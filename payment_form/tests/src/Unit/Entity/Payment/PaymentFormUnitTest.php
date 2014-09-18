@@ -206,9 +206,9 @@ class PaymentFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  public function testSubmit() {
+  public function testSubmitForm() {
     $form = array(
       'payment_method' => array(
         '#type' => $this->randomMachineName(),
@@ -237,7 +237,7 @@ class PaymentFormUnitTest extends UnitTestCase {
     $this->payment->expects($this->once())
       ->method('execute');
 
-    $this->form->submit($form, $form_state);
+    $this->form->submitForm($form, $form_state);
   }
 
   /**

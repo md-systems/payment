@@ -105,7 +105,6 @@ class PaymentEditForm extends ContentEntityForm {
     parent::save($form, $form_state);
     /** @var \Drupal\payment\Entity\PaymentInterface $payment */
     $payment = $this->getEntity();
-    $payment->save();
 
     $form_state->setRedirectUrl($payment->urlInfo());
   }

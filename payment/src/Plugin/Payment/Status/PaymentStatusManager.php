@@ -37,7 +37,7 @@ class PaymentStatusManager extends DefaultPluginManager implements PaymentStatus
    *   The class_resolver.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler, ClassResolverInterface $class_resolver) {
-    parent::__construct('Plugin/Payment/Status', $namespaces, $module_handler, '\Drupal\payment\Annotations\PaymentStatus');
+    parent::__construct('Plugin/Payment/Status', $namespaces, $module_handler, '\Drupal\payment\plugin\payment\status\PaymentStatusInterface', '\Drupal\payment\Annotations\PaymentStatus');
     $this->alterInfo('payment_status');
     $this->setCacheBackend($cache_backend, 'payment_status');
     $this->classResolver = $class_resolver;

@@ -463,9 +463,9 @@ class PaymentMethodConfigurationFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  public function testSubmit() {
+  public function testSubmitForm() {
     /** @var \Drupal\payment\Entity\PaymentMethodConfiguration\PaymentMethodConfigurationForm|\PHPUnit_Framework_MockObject_MockObject $form_object */
     $form_object = $this->getMockBuilder('\Drupal\payment\Entity\PaymentMethodConfiguration\PaymentMethodConfigurationForm')
       ->setConstructorArgs(array($this->stringTranslation, $this->currentUser, $this->userStorage, $this->paymentMethodConfigurationStorage, $this->paymentMethodConfigurationManager))
@@ -495,7 +495,7 @@ class PaymentMethodConfigurationFormUnitTest extends UnitTestCase {
       ->method('submitConfigurationForm')
       ->with($form['plugin_form'], $form_state);
 
-    $form_object->submit($form, $form_state);
+    $form_object->submitForm($form, $form_state);
   }
 
 }

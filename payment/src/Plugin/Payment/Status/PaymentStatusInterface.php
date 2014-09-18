@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Contains \Drupal\payment\plugin\payment\PaymentStatus\PaymentStatusInterface.
+ * Contains \Drupal\payment\plugin\payment\status\PaymentStatusInterface.
  */
 
 namespace Drupal\payment\plugin\payment\status;

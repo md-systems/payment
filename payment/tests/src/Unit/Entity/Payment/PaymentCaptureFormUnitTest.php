@@ -114,9 +114,9 @@ class PaymentCaptureFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  function testSubmit() {
+  function testSubmitForm() {
     $payment_method = $this->getMock('\Drupal\payment\Plugin\Payment\Method\PaymentMethodCapturePaymentInterface');
     $payment_method->expects($this->once())
       ->method('capturePayment');
@@ -138,7 +138,7 @@ class PaymentCaptureFormUnitTest extends UnitTestCase {
       ->method('setRedirectUrl')
       ->with($url);
 
-    $this->form->submit($form, $form_state);
+    $this->form->submitForm($form, $form_state);
   }
 
 }

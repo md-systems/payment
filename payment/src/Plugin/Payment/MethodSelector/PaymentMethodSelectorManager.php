@@ -9,7 +9,6 @@ namespace Drupal\payment\Plugin\Payment\MethodSelector;
 use Drupal\Component\Plugin\Exception\PluginException;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Plugin\DefaultPluginManager;
 
 /**
@@ -31,7 +30,7 @@ class PaymentMethodSelectorManager extends DefaultPluginManager implements Payme
    *   The module handler to invoke the alter hook with.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/Payment/MethodSelector', $namespaces, $module_handler, '\Drupal\payment\Annotations\PaymentMethodSelector');
+    parent::__construct('Plugin/Payment/MethodSelector', $namespaces, $module_handler, '\Drupal\payment\Plugin\Payment\MethodSelector\PaymentMethodSelectorInterface', '\Drupal\payment\Annotations\PaymentMethodSelector');
     $this->alterInfo('payment_method_selector');
     $this->setCacheBackend($cache_backend, 'payment_method_selector');
   }

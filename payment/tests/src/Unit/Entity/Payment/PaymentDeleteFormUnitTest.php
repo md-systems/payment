@@ -127,9 +127,9 @@ class PaymentDeleteFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  function testSubmit() {
+  function testSubmitForm() {
     $this->payment->expects($this->once())
       ->method('delete');
 
@@ -139,7 +139,7 @@ class PaymentDeleteFormUnitTest extends UnitTestCase {
       ->method('setRedirect')
       ->with('<front>');
 
-    $this->form->submit($form, $form_state);
+    $this->form->submitForm($form, $form_state);
   }
 
 }

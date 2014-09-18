@@ -268,9 +268,9 @@ class PaymentStatusFormUnitTest extends UnitTestCase {
   }
 
   /**
-   * @covers ::submit
+   * @covers ::submitForm
    */
-  public function testSubmit() {
+  public function testSubmitForm() {
     $timestamp = $this->randomMachineName();
     $plugin_id = $this->randomMachineName();
 
@@ -312,7 +312,7 @@ class PaymentStatusFormUnitTest extends UnitTestCase {
       ->method('setRedirectUrl')
       ->with($url);
 
-    $this->form->submit($form, $form_state);
+    $this->form->submitForm($form, $form_state);
   }
 
   /**

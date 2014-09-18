@@ -167,11 +167,11 @@ class PaymentMethodConfigurationForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     /** @var \Drupal\payment\Plugin\Payment\MethodConfiguration\PaymentMethodConfigurationInterface $payment_method_configuration */
     $payment_method_configuration = $form_state->get('payment_method_configuration');
     $payment_method_configuration->submitConfigurationForm($form['plugin_form'], $form_state);
-    parent::submit($form, $form_state);
+    parent::submitForm($form, $form_state);
   }
 
   /**
@@ -200,7 +200,6 @@ class PaymentMethodConfigurationForm extends EntityForm {
   public function save(array $form, FormStateInterface $form_state) {
     parent::save($form, $form_state);
     $payment_method = $this->getEntity();
-    $payment_method->save();
     drupal_set_message($this->t('@label has been saved.', array(
       '@label' => $payment_method->label()
     )));

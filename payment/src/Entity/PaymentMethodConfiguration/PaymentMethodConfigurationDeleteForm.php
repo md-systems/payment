@@ -54,7 +54,7 @@ class PaymentMethodConfigurationDeleteForm extends EntityConfirmFormBase {
   /**
    * {@inheritdoc}
    */
-  public function submit(array $form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $payment_method = $this->getEntity();
     $payment_method->delete();
     drupal_set_message($this->t('%label has been deleted.', array(

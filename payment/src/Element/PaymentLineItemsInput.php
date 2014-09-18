@@ -14,6 +14,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\payment\Payment;
 use Drupal\payment\Plugin\Payment\LineItem\PaymentLineItemInterface;
+use Drupal\Core\Render\Element\ElementInterface;
+use Drupal\Core\Render\Element\RenderElement;
 
 /**
  * Provides a payment line items configuration element.
@@ -24,7 +26,7 @@ use Drupal\payment\Plugin\Payment\LineItem\PaymentLineItemInterface;
  * @FormElement("payment_line_items_input")
  *
  */
-class PaymentLineItemsInput {
+class PaymentLineItemsInput extends RenderElement implements ElementInterface {
 
   /**
    * An unlimited cardinality.

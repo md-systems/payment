@@ -29,7 +29,7 @@ class PaymentLineItemManager extends DefaultPluginManager implements PaymentLine
    *   The module handler.
    */
   public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
-    parent::__construct('Plugin/Payment/LineItem', $namespaces, $module_handler, '\Drupal\payment\Annotations\PaymentLineItem');
+    parent::__construct('Plugin/Payment/LineItem', $namespaces, $module_handler, '\Drupal\payment\Plugin\Payment\LineItem\PaymentLineItemInterface', '\Drupal\payment\Annotations\PaymentLineItem');
     $this->alterInfo('payment_line_item');
     $this->setCacheBackend($cache_backend, 'payment_line_item');
   }
