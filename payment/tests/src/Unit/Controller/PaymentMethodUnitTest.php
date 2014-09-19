@@ -6,9 +6,8 @@
  */
 
 namespace Drupal\Tests\payment\Unit\Controller {
-
-use Drupal\Core\Access\AccessInterface;
-use Drupal\payment\Controller\PaymentMethod;
+  use Drupal\Core\Access\AccessResult;
+  use Drupal\payment\Controller\PaymentMethod;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -202,16 +201,16 @@ class PaymentMethodUnitTest extends UnitTestCase {
     $access_controller = $this->getMock('\Drupal\Core\Entity\EntityAccessControlHandlerInterface');
     $access_controller->expects($this->at(0))
       ->method('createAccess')
-      ->with('foo', $this->currentUser)
-      ->will($this->returnValue(TRUE));
+      ->with('foo', $this->currentUser, array(), TRUE)
+      ->will($this->returnValue(AccessResult::allowed()));
     $access_controller->expects($this->at(1))
       ->method('createAccess')
-      ->with('foo', $this->currentUser)
-      ->will($this->returnValue(FALSE));
+      ->with('foo', $this->currentUser, array(), TRUE)
+      ->will($this->returnValue(AccessResult::forbidden()));
     $access_controller->expects($this->at(2))
       ->method('createAccess')
-      ->with('bar', $this->currentUser)
-      ->will($this->returnValue(FALSE));
+      ->with('bar', $this->currentUser, array(), TRUE)
+      ->will($this->returnValue(AccessResult::forbidden()));
 
     $this->entityManager->expects($this->exactly(2))
       ->method('getAccessControlHandler')
@@ -220,8 +219,8 @@ class PaymentMethodUnitTest extends UnitTestCase {
 
     $request = new Request();
 
-    $this->assertSame(AccessInterface::ALLOW, $this->controller->selectAccess($request));
-    $this->assertSame(AccessInterface::DENY, $this->controller->selectAccess($request));
+    $this->assertTrue($this->controller->selectAccess($request)->isAllowed());
+    $this->assertFalse($this->controller->selectAccess($request)->isAllowed());
   }
 
   /**
@@ -263,20 +262,20 @@ class PaymentMethodUnitTest extends UnitTestCase {
     $access_controller = $this->getMock('\Drupal\Core\Entity\EntityAccessControlHandlerInterface');
     $access_controller->expects($this->at(0))
       ->method('createAccess')
-      ->with($plugin_id, $this->currentUser)
-      ->will($this->returnValue(TRUE));
+      ->with($plugin_id, $this->currentUser, array(), TRUE)
+      ->will($this->returnValue(AccessResult::allowed()));
     $access_controller->expects($this->at(1))
       ->method('createAccess')
-      ->with($plugin_id, $this->currentUser)
-      ->will($this->returnValue(FALSE));
+      ->with($plugin_id, $this->currentUser, array(), TRUE)
+      ->will($this->returnValue(AccessResult::forbidden()));
 
     $this->entityManager->expects($this->exactly(2))
       ->method('getAccessControlHandler')
       ->with('payment_method_configuration')
       ->will($this->returnValue($access_controller));
 
-    $this->assertSame(AccessInterface::ALLOW, $this->controller->addAccess($request));
-    $this->assertSame(AccessInterface::DENY, $this->controller->addAccess($request));
+    $this->assertTrue($this->controller->addAccess($request)->isAllowed());
+    $this->assertFalse($this->controller->addAccess($request)->isAllowed());
   }
 
   /**

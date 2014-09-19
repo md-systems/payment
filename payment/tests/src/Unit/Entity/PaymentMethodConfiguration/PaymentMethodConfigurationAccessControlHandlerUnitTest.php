@@ -7,6 +7,7 @@
 
 namespace Drupal\Tests\payment\Unit\Entity\PaymentMethodConfiguration;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\payment\Entity\PaymentMethodConfiguration\PaymentMethodConfigurationAccessControlHandler;
 use Drupal\Tests\UnitTestCase;
 
@@ -45,11 +46,14 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $payment_method = $this->getMockBuilder('\Drupal\payment\Entity\PaymentMethodConfiguration')
       ->disableOriginalConstructor()
       ->getMock();
+    $payment_method->expects($this->any())
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
 
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -59,18 +63,24 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $operation = $this->randomMachineName();
     $language_code = $this->randomMachineName();
     $account = $this->getMock('\Drupal\Core\Session\AccountInterface');
-    $account->expects($this->once())
+    $map = array(
+      array('payment.payment_method_configuration.' . $operation . '.any', TRUE),
+      array('payment.payment_method_configuration.' . $operation . '.own', FALSE),
+    );
+    $account->expects($this->any())
       ->method('hasPermission')
-      ->with('payment.payment_method_configuration.' . $operation . '.any')
-      ->will($this->returnValue(TRUE));
+      ->will($this->returnValueMap($map));
     $payment_method = $this->getMockBuilder('\Drupal\payment\Entity\PaymentMethodConfiguration')
       ->disableOriginalConstructor()
       ->getMock();
+    $payment_method->expects($this->any())
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
 
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
-    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -100,12 +110,15 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $payment_method->expects($this->at(1))
       ->method('getOwnerId')
       ->will($this->returnValue($owner_id + 1));
+    $payment_method->expects($this->any())
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
 
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
-    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -127,30 +140,37 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
       ->will($this->returnValue(TRUE));
     // Disabled, with permission.
     $payment_method->expects($this->at(1))
-      ->method('status')
-      ->will($this->returnValue(FALSE));
+      ->method('access')
+      ->with('update', $account)
+      ->will($this->returnValue(AccessResult::allowed()));
     $payment_method->expects($this->at(2))
-      ->method('access')
-      ->with('update', $account)
-      ->will($this->returnValue(TRUE));
-    // Disabled, without permission.
-    $payment_method->expects($this->at(3))
       ->method('status')
       ->will($this->returnValue(FALSE));
-    $payment_method->expects($this->at(4))
+    $payment_method->expects($this->at(3))
       ->method('access')
       ->with('update', $account)
+      ->will($this->returnValue(AccessResult::allowed()));
+    // Disabled, without permission.
+    $payment_method->expects($this->at(4))
+      ->method('status')
       ->will($this->returnValue(FALSE));
+    $payment_method->expects($this->at(5))
+      ->method('access')
+      ->with('update', $account)
+      ->will($this->returnValue(AccessResult::forbidden()));
+    $payment_method->expects($this->any())
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
 
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
     // Enabled.
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Disabled, with permission.
-    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Disabled, without permission.
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -170,32 +190,36 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $payment_method->expects($this->at(0))
       ->method('status')
       ->will($this->returnValue(FALSE));
-    // Enabled, with permission.
     $payment_method->expects($this->at(1))
-      ->method('status')
-      ->will($this->returnValue(TRUE));
+      ->method('access')
+      ->with('update', $account)
+      ->will($this->returnValue(AccessResult::allowed()));
+    // Enabled, with permission.
     $payment_method->expects($this->at(2))
-      ->method('access')
-      ->with('update', $account)
-      ->will($this->returnValue(TRUE));
-    // Enabled, without permission.
-    $payment_method->expects($this->at(3))
       ->method('status')
       ->will($this->returnValue(TRUE));
-    $payment_method->expects($this->at(4))
+    $payment_method->expects($this->at(3))
       ->method('access')
       ->with('update', $account)
-      ->will($this->returnValue(FALSE));
+      ->will($this->returnValue(AccessResult::allowed()));
+    // Enabled, without permission.
+    $payment_method->expects($this->at(4))
+      ->method('status')
+      ->will($this->returnValue(TRUE));
+    $payment_method->expects($this->at(5))
+      ->method('access')
+      ->with('update', $account)
+      ->will($this->returnValue(AccessResult::forbidden()));
 
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
     // Disabled.
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Enabled, with permission.
-    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Enabled, without permission.
-    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($this->accessControlHandler, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -219,11 +243,11 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     // No create access.
     $access_controller->expects($this->at(0))
       ->method('createAccess')
-      ->will($this->returnValue(FALSE));
+      ->will($this->returnValue(AccessResult::forbidden()));
     // Create access, with view permission.
     $access_controller->expects($this->at(1))
       ->method('createAccess')
-      ->will($this->returnValue(TRUE));
+      ->will($this->returnValue(AccessResult::allowed()));
     $payment_method->expects($this->at(2))
       ->method('access')
       ->with('view', $account)
@@ -278,6 +302,6 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('getCache');
     $method->setAccessible(TRUE);
-    $this->assertNull($method->invokeArgs($this->accessControlHandler, array($cache_id, $operation, $language_code, $account)));
+    $this->assertNull($method->invokeArgs($this->accessControlHandler, array($cache_id, $operation, $language_code, $account))->isAllowed());
   }
 }

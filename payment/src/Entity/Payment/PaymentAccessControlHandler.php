@@ -35,15 +35,20 @@ class PaymentAccessControlHandler extends EntityAccessControlHandler {
     }
     elseif ($operation == 'capture') {
       $payment_method = $payment->getPaymentMethod();
-      return AccessResult::allowedIf($payment_method instanceof PaymentMethodCapturePaymentInterface)
-        ->andIf(AccessResult::allowedIf($payment_method->capturePaymentAccess($account)))
-        ->andIf($this->checkAccessPermission($payment, $operation, $account));
+      if ($payment_method instanceof PaymentMethodCapturePaymentInterface) {
+        return AccessResult::allowedIf($payment_method instanceof PaymentMethodCapturePaymentInterface)
+          ->andIf(AccessResult::allowedIf($payment_method->capturePaymentAccess($account)))
+          ->andIf($this->checkAccessPermission($payment, $operation, $account));
+      }
+      return AccessResult::forbidden();
     }
     elseif ($operation == 'refund') {
       $payment_method = $payment->getPaymentMethod();
-      return $payment_method instanceof PaymentMethodRefundPaymentInterface
-      && $payment_method->refundPaymentAccess($account)
-      && $this->checkAccessPermission($payment, $operation, $account);
+      if ($payment_method instanceof PaymentMethodRefundPaymentInterface) {
+        return AccessResult::allowedIf($payment_method->refundPaymentAccess($account))
+          ->andIf($this->checkAccessPermission($payment, $operation, $account));
+      }
+      return AccessResult::forbidden();
     }
     return $this->checkAccessPermission($payment, $operation, $account);
   }

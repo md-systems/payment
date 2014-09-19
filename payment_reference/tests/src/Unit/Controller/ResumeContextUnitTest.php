@@ -129,7 +129,7 @@ class ResumeContextUnitTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->assertSame($expected, $this->controller->access($request, $payment));
+    $this->assertSame($expected, $this->controller->access($request, $payment)->isAllowed());
   }
 
   /**
@@ -137,8 +137,8 @@ class ResumeContextUnitTest extends UnitTestCase {
    */
   public function providerTestAccess() {
     return array(
-      array(AccessInterface::ALLOW, TRUE),
-      array(AccessInterface::DENY, FALSE),
+      array(TRUE, TRUE),
+      array(FALSE, FALSE),
     );
   }
 

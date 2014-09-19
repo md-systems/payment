@@ -7,7 +7,6 @@
 
 namespace Drupal\payment_reference\Controller;
 
-use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -20,7 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Handles the "resume context" route.
  */
-class ResumeContext extends ControllerBase implements ContainerInjectionInterface, AccessInterface {
+class ResumeContext extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * Constructs a new instance.

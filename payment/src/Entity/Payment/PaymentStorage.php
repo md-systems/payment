@@ -247,8 +247,10 @@ class PaymentStorage extends SqlContentEntityStorage implements PaymentStorageIn
             'payment_id' => $status->getPayment()->id(),
             'plugin_id' => $status->getPluginId(),
           );
-          drupal_write_record('payment_status', $record);
-          $status->setId($record['id']);
+          $id = $this->database->insert('payment_status')
+            ->fields($record)
+            ->execute();
+          $status->setId($id);
         }
       }
       $this->database->update('payment')

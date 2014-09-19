@@ -7,7 +7,6 @@
 
 namespace Drupal\payment_reference\Controller;
 
-use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Handles the "pay" route.
  */
-class Pay extends ControllerBase implements ContainerInjectionInterface, AccessInterface {
+class Pay extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * The key/value factory.
@@ -65,7 +64,8 @@ class Pay extends ControllerBase implements ContainerInjectionInterface, AccessI
    * @param string $storage_key
    *   The storage key with which the payment can be loaded.
    *
-   * @return string
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
   public function access(Request $request, $storage_key) {
     return AccessResult::allowedIf($this->keyValueFactory->get('payment.payment_type.payment_reference')->has($storage_key));

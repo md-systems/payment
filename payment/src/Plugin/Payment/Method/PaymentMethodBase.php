@@ -6,7 +6,6 @@
 
 namespace Drupal\payment\Plugin\Payment\Method;
 
-use Drupal\Core\Access\AccessInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

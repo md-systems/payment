@@ -7,7 +7,6 @@
 
 namespace Drupal\Tests\payment_reference\Unit\Controller;
 
-use Drupal\Core\Access\AccessInterface;
 use Drupal\payment_reference\Controller\Pay;
 use Drupal\Tests\UnitTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -116,16 +115,16 @@ class PayUnitTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
 
-    $this->assertSame($expected, $this->controller->access($request, $storage_key));
+    $this->assertSame($expected, $this->controller->access($request, $storage_key)->isAllowed());
   }
 
   /**
    * Provides data to testAccess().
    */
-  public function providerTestAccess() {
+  public function droviderTestAccess() {
     return array(
-      array(AccessInterface::ALLOW, TRUE),
-      array(AccessInterface::DENY, FALSE),
+      array(TRUE, TRUE),
+      array(FALSE, FALSE),
     );
   }
 

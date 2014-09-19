@@ -180,17 +180,21 @@ class PaymentMethod extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
-   * @return string
-   *   self::ALLOW, self::DENY, or self::KILL.
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
   public function selectAccess(Request $request) {
     $definitions = $this->paymentMethodConfigurationManager->getDefinitions();
     unset($definitions['payment_unavailable']);
     $access_controller = $this->entityManager->getAccessControlHandler('payment_method_configuration');
+    $access_result = AccessResult::create();
     foreach (array_keys($definitions) as $plugin_id) {
-      return $access_controller->createAccess($plugin_id, $this->currentUser, array(), TRUE);
+      $access_result = $access_controller->createAccess($plugin_id, $this->currentUser, array(), TRUE);
+      if ($access_result->isAllowed()) {
+        return $access_result;
+      }
     }
-    return AccessResult::create();
+    return $access_result;
   }
 
   /**
@@ -229,13 +233,13 @@ class PaymentMethod extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
-   * @return string
-   *   self::ALLOW, self::DENY, or self::KILL.
+   * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
   public function addAccess(Request $request) {
     $plugin_id = $request->attributes->get('plugin_id');
 
-    return $this->entityManager->getAccessControlHandler('payment_method_configuration')->createAccess($plugin_id, $this->currentUser, TRUE);
+    return $this->entityManager->getAccessControlHandler('payment_method_configuration')->createAccess($plugin_id, $this->currentUser, array(), TRUE);
   }
 
   /**
