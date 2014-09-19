@@ -121,7 +121,7 @@ class PayUnitTest extends UnitTestCase {
   /**
    * Provides data to testAccess().
    */
-  public function droviderTestAccess() {
+  public function providerTestAccess() {
     return array(
       array(TRUE, TRUE),
       array(FALSE, FALSE),

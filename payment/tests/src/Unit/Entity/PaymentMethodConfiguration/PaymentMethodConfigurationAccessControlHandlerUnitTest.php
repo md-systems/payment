@@ -211,6 +211,10 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::forbidden()));
 
+    $payment_method->expects($this->any())
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
+
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
@@ -265,11 +269,11 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $method = $class->getMethod('checkAccess');
     $method->setAccessible(TRUE);
     // No create access.
-    $this->assertFalse($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Create access, with view permission.
-    $this->assertTrue($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account)));
+    $this->assertTrue($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account))->isAllowed());
     // Create access, without view permission.
-    $this->assertFalse($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account)));
+    $this->assertFalse($method->invokeArgs($access_controller, array($payment_method, $operation, $language_code, $account))->isAllowed());
   }
 
   /**
@@ -287,7 +291,7 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('checkCreateAccess');
     $method->setAccessible(TRUE);
-    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($account, $context, $bundle)));
+    $this->assertTrue($method->invokeArgs($this->accessControlHandler, array($account, $context, $bundle))->isAllowed());
   }
 
   /**
@@ -302,6 +306,6 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $class = new \ReflectionClass($this->accessControlHandler);
     $method = $class->getMethod('getCache');
     $method->setAccessible(TRUE);
-    $this->assertNull($method->invokeArgs($this->accessControlHandler, array($cache_id, $operation, $language_code, $account))->isAllowed());
+    $this->assertNull($method->invokeArgs($this->accessControlHandler, array($cache_id, $operation, $language_code, $account)));
   }
 }
