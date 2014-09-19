@@ -138,27 +138,35 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $payment_method->expects($this->at(0))
       ->method('status')
       ->will($this->returnValue(TRUE));
-    // Disabled, with permission.
     $payment_method->expects($this->at(1))
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::allowed()));
     $payment_method->expects($this->at(2))
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
+
+    // Disabled, with permission.
+    $payment_method->expects($this->at(3))
       ->method('status')
       ->will($this->returnValue(FALSE));
-    $payment_method->expects($this->at(3))
+    $payment_method->expects($this->at(4))
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::allowed()));
+    $payment_method->expects($this->at(5))
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
+
     // Disabled, without permission.
-    $payment_method->expects($this->at(4))
+    $payment_method->expects($this->at(6))
       ->method('status')
       ->will($this->returnValue(FALSE));
-    $payment_method->expects($this->at(5))
+    $payment_method->expects($this->at(7))
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::forbidden()));
-    $payment_method->expects($this->any())
+    $payment_method->expects($this->at(8))
       ->method('getCacheTag')
       ->willReturn(array('payment_method_configuration' => array(1)));
 
@@ -194,24 +202,29 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::allowed()));
-    // Enabled, with permission.
     $payment_method->expects($this->at(2))
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
+    // Enabled, with permission.
+    $payment_method->expects($this->at(3))
       ->method('status')
       ->will($this->returnValue(TRUE));
-    $payment_method->expects($this->at(3))
+    $payment_method->expects($this->at(4))
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::allowed()));
+    $payment_method->expects($this->at(5))
+      ->method('getCacheTag')
+      ->willReturn(array('payment_method_configuration' => array(1)));
     // Enabled, without permission.
-    $payment_method->expects($this->at(4))
+    $payment_method->expects($this->at(6))
       ->method('status')
       ->will($this->returnValue(TRUE));
-    $payment_method->expects($this->at(5))
+    $payment_method->expects($this->at(7))
       ->method('access')
       ->with('update', $account)
       ->will($this->returnValue(AccessResult::forbidden()));
-
-    $payment_method->expects($this->any())
+    $payment_method->expects($this->at(8))
       ->method('getCacheTag')
       ->willReturn(array('payment_method_configuration' => array(1)));
 
@@ -248,22 +261,28 @@ class PaymentMethodConfigurationAccessControlHandlerUnitTest extends UnitTestCas
     $access_controller->expects($this->at(0))
       ->method('createAccess')
       ->will($this->returnValue(AccessResult::forbidden()));
+    $payment_method->expects($this->at(1))
+      ->method('access')
+      ->with('view', $account, TRUE)
+      ->will($this->returnValue(AccessResult::allowed()));
+
     // Create access, with view permission.
     $access_controller->expects($this->at(1))
       ->method('createAccess')
       ->will($this->returnValue(AccessResult::allowed()));
-    $payment_method->expects($this->at(2))
+    $payment_method->expects($this->at(3))
       ->method('access')
-      ->with('view', $account)
-      ->will($this->returnValue(TRUE));
+      ->with('view', $account, TRUE)
+      ->will($this->returnValue(AccessResult::allowed()));
+
     // Create access, without view permission.
     $access_controller->expects($this->at(2))
       ->method('createAccess')
-      ->will($this->returnValue(TRUE));
-    $payment_method->expects($this->at(4))
+      ->will($this->returnValue(AccessResult::allowed()));
+    $payment_method->expects($this->at(5))
       ->method('access')
-      ->with('view', $account)
-      ->will($this->returnValue(FALSE));
+      ->with('view', $account, TRUE)
+      ->will($this->returnValue(AccessResult::forbidden()));
 
     $class = new \ReflectionClass($access_controller);
     $method = $class->getMethod('checkAccess');

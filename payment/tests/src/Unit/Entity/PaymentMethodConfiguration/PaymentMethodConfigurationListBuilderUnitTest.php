@@ -253,7 +253,7 @@ class PaymentMethodConfigurationListBuilderUnitTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
     $map = array(
-      array('duplicate', NULL, TRUE),
+      array('duplicate', NULL, FALSE, TRUE),
     );
     $payment->expects($this->any())
       ->method('access')

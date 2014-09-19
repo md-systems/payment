@@ -346,10 +346,10 @@ class PaymentListBuilderUnitTest extends UnitTestCase {
       ->disableOriginalConstructor()
       ->getMock();
     $map = array(
-      array('view', NULL, TRUE),
-      array('update_status', NULL, TRUE),
-      array('capture', NULL, TRUE),
-      array('refund', NULL, TRUE),
+      array('view', NULL, FALSE, TRUE),
+      array('update_status', NULL, FALSE, TRUE),
+      array('capture', NULL, FALSE, TRUE),
+      array('refund', NULL, FALSE, TRUE),
     );
     $payment->expects($this->any())
       ->method('access')

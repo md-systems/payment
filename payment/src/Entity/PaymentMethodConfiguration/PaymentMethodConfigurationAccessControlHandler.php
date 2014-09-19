@@ -23,13 +23,13 @@ class PaymentMethodConfigurationAccessControlHandler extends EntityAccessControl
   protected function checkAccess(EntityInterface $payment_method, $operation, $langcode, AccountInterface $account) {
     /** @var \Drupal\payment\Entity\PaymentMethodConfigurationInterface $payment_method */
     if ($operation == 'enable') {
-      return AccessResult::forbiddenIf($payment_method->status())->andIf($payment_method->access('update', $account))->cacheUntilEntityChanges($payment_method);
+      return AccessResult::allowedIf(!$payment_method->status())->andIf($payment_method->access('update', $account))->cacheUntilEntityChanges($payment_method);
     }
     elseif ($operation == 'disable') {
       return AccessResult::allowedIf($payment_method->status())->andIf($payment_method->access('update', $account))->cacheUntilEntityChanges($payment_method);
     }
     elseif ($operation == 'duplicate') {
-      return $this->createAccess($payment_method->bundle(), $account, array(), TRUE)->andIf($payment_method->access('view', $account));
+      return $this->createAccess($payment_method->bundle(), $account, array(), TRUE)->andIf($payment_method->access('view', $account, TRUE));
     }
     else {
       $permission = 'payment.payment_method_configuration.' . $operation;
