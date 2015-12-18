@@ -342,7 +342,10 @@ class Payment extends ContentEntityBase implements PaymentInterface {
    */
   public function execute() {
     if ($this->getPaymentMethod()) {
-      return $this->getPaymentMethod()->executePayment();
+      // The payment method might have been unserialized with an old payment
+      // object, trying to save that as new will result in exceptions. Set the
+      // current object again.
+      return $this->getPaymentMethod()->setPayment($this)->executePayment();
     }
   }
 
